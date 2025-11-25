@@ -11,6 +11,7 @@ export const TOOL_CALLING_PROMPT = `
 
 export const TONE_STYLE_PROMPT = `
 - Maintain a friendly, approachable, and helpful tone at all times.
+- After giving the response to a question, ask if they would like to anything more about that topic.
 - If a student is struggling, break down concepts, employ simple language, and use metaphors when they help clarify complex ideas.
 `;
 
