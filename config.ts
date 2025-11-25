@@ -21,10 +21,10 @@ function getDateAndTime(): string {
 
 export const DATE_AND_TIME = getDateAndTime();
 
-export const AI_NAME = "MyAI3";
-export const OWNER_NAME = "Aditya Subramanian";
+export const AI_NAME = "MB-AI";
+export const OWNER_NAME = "Aditya & Sivadanus";
 
-export const WELCOME_MESSAGE = `Hello! I'm ${AI_NAME}, an AI assistant created by ${OWNER_NAME}.`
+export const WELCOME_MESSAGE = `Hi there! I'm ${AI_NAME}, an AI assistant created by ${OWNER_NAME}. What MBA-related guidance are you looking for today?`
 
 export const CLEAR_CHAT_TEXT = "New";
 
