@@ -1,21 +1,6 @@
 "use client";
 
-import { useState } from "react";
-export function CollegeCompare({ onSend, defaults }: CollegeCompareProps) {
-  const [collegeA, setCollegeA] = useState("");
-  const [collegeB, setCollegeB] = useState("");
-  const [selectedParams, setSelectedParams] = useState<string[]>([]);
-
-  // When defaults change (after "compare X and Y"), prefill
-  useEffect(() => {
-    if (defaults?.collegeA) setCollegeA(defaults.collegeA);
-    if (defaults?.collegeB) setCollegeB(defaults.collegeB);
-
-    // sensible default parameters for first comparison
-    if (defaults && selectedParams.length === 0) {
-      setSelectedParams(["Median CTC", "Highest CTC", "Average CTC"]);
-    }
-  }, [defaults]);
+import React, { useState, useEffect } from "react";
 
 const COLLEGES = [
   "IIM Ahmedabad",
@@ -39,7 +24,7 @@ const PARAMETERS = [
   "Program Fee",
   "Major Recruiters",
   "Gender Ratio",
-  "Average Work Experience"
+  "Average Work Experience",
 ];
 
 type CollegeCompareProps = {
@@ -50,10 +35,21 @@ type CollegeCompareProps = {
   };
 };
 
-export function CollegeCompare({ onSend }: CollegeCompareProps) {
+export function CollegeCompare({ onSend, defaults }: CollegeCompareProps) {
   const [collegeA, setCollegeA] = useState("");
   const [collegeB, setCollegeB] = useState("");
   const [selectedParams, setSelectedParams] = useState<string[]>([]);
+
+  // When defaults change (after "compare X and Y"), prefill
+  useEffect(() => {
+    if (defaults?.collegeA) setCollegeA(defaults.collegeA);
+    if (defaults?.collegeB) setCollegeB(defaults.collegeB);
+
+    // sensible default parameters for first comparison
+    if (defaults && selectedParams.length === 0) {
+      setSelectedParams(["Median CTC", "Highest CTC", "Average CTC"]);
+    }
+  }, [defaults]);
 
   const toggleParam = (param: string) => {
     setSelectedParams((prev) =>
@@ -76,6 +72,13 @@ export function CollegeCompare({ onSend }: CollegeCompareProps) {
   return (
     <div className="border rounded-lg p-3 mb-3 text-sm bg-gray-50">
       <div className="font-medium mb-2">Compare two B-schools</div>
+
+      {(defaults?.collegeA || defaults?.collegeB) && (
+        <div className="text-xs text-gray-500 mb-2">
+          I’ve turned on comparison mode. Adjust the colleges/parameters and hit{" "}
+          <b>Compare</b>.
+        </div>
+      )}
 
       <div className="flex gap-2 mb-2">
         <select
