@@ -125,14 +125,36 @@ export default function Chat() {
   });
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-  const lower = data.message.toLowerCase();
+  const text = data.message;
+  const lower = text.toLowerCase();
 
-  // If the user mentions "compare" in any way, show the compare UI
-  if (lower.includes("compare")) {
+  const isCompareIntent = lower.includes("compare");
+
+  if (isCompareIntent) {
+    // 1) show the comparison UI
     setShowCompare(true);
+
+    // 2) append the user's message as a bubble (without calling the model)
+    const newMessage: UIMessage = {
+      id: `user-${Date.now()}`,
+      role: "user",
+      parts: [
+        {
+          type: "text",
+          text,
+        },
+      ],
+    };
+
+    setMessages((prev) => [...prev, newMessage]);
+
+    // 3) clear the input and STOP here (no sendMessage)
+    form.reset();
+    return;
   }
 
-  sendMessage({ text: data.message });
+  // Normal flow for non-comparison queries
+  sendMessage({ text });
   form.reset();
 }
 
@@ -182,18 +204,22 @@ export default function Chat() {
           <div className="flex flex-col items-center justify-end min-h-full">
           {isClient ? (
   <>
-    {showCompare && (
-      <div className="max-w-3xl w-full mb-4">
-        <CollegeCompare onSend={(content) => sendMessage({ text: content })} />
-      </div>
-    )}
-
+    {/* All chat messages first */}
     <MessageWall
       messages={messages}
       status={status}
       durations={durations}
       onDurationChange={handleDurationChange}
     />
+
+    {/* Then the comparison UI, directly under the last message */}
+    {showCompare && (
+      <div className="max-w-3xl w-full mt-4 mb-4">
+        <CollegeCompare
+          onSend={(content) => sendMessage({ text: content })}
+        />
+      </div>
+    )}
 
     {status === "submitted" && (
       <div className="flex justify-start max-w-3xl w-full">
@@ -202,7 +228,6 @@ export default function Chat() {
     )}
   </>
 ) : (
-
 
               <div className="flex justify-center max-w-2xl w-full">
                 <Loader2 className="size-4 animate-spin text-muted-foreground" />
