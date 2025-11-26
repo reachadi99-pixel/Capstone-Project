@@ -21,6 +21,9 @@ const PARAMETERS = [
   "Average CTC",
   "Batch Size",
   "Program Fee",
+  "Major Recruiters",
+  "Gender Ratio",
+  "Average Work Experience"
 ];
 
 type CollegeCompareProps = {
