@@ -1,6 +1,5 @@
 "use client";
 
-import { CollegeCompare } from "@/components/CollegeCompare";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -24,6 +23,7 @@ import { useEffect, useState, useRef } from "react";
 import { AI_NAME, CLEAR_CHAT_TEXT, OWNER_NAME, WELCOME_MESSAGE } from "@/config";
 import Image from "next/image";
 import Link from "next/link";
+import { CollegeCompare } from "@/components/CollegeCompare";
 
 const formSchema = z.object({
   message: z
@@ -172,16 +172,27 @@ export default function Chat() {
         <div className="h-screen overflow-y-auto px-5 py-4 w-full pt-[88px] pb-[150px]">
           <div className="flex flex-col items-center justify-end min-h-full">
             {isClient ? (
-              <>
-                <CollegeCompare onSend={(content) => sendMessage({ text: content })} />
-                <MessageWall messages={messages} status={status} durations={durations} onDurationChange={handleDurationChange} />
-                {status === "submitted" && (
-                  <div className="flex justify-start max-w-3xl w-full">
-                    <Loader2 className="size-4 animate-spin text-muted-foreground" />
-                  </div>
-                )}
-              </>
-            ) : (
+  <>
+    {/* College comparison panel */}
+    <div className="max-w-3xl w-full mb-4">
+      <CollegeCompare onSend={(content) => sendMessage({ text: content })} />
+    </div>
+
+    {/* Existing messages */}
+    <MessageWall
+      messages={messages}
+      status={status}
+      durations={durations}
+      onDurationChange={handleDurationChange}
+    />
+
+    {status === "submitted" && (
+      <div className="flex justify-start max-w-3xl w-full">
+        <Loader2 className="size-4 animate-spin text-muted-foreground" />
+      </div>
+    )}
+  </>
+) : (
               <div className="flex justify-center max-w-2xl w-full">
                 <Loader2 className="size-4 animate-spin text-muted-foreground" />
               </div>
