@@ -25,11 +25,15 @@ Behavior rules:
   - Then explicitly ASK the user: "Would you like me to search the web for this?"
 `;
 
-export const TOOL_CALLING_FOLLOWUP_RULES = `
+export const TOOL_CALLING_FOLLOWUP_RULES_YES = `
 Follow-up rules:
 - If the user says "yes", "okay", or otherwise gives clear consent to use the web:
   - Call webSearch with the user's query.
   - Start your reply with a brief reminder that you are now using web search (e.g., "As you requested, I looked this up on the web...").
+`;
+
+export const TOOL_CALLING_FOLLOWUP_RULES_NO = `
+Follow-up rules:
 - If the user says "no" or declines web search:
   - Do NOT call webSearch.
   - Politely ask what else you can help them with and suggest related ways you could assist using the existing knowledge base.
@@ -48,7 +52,6 @@ export const TONE_STYLE_PROMPT = `
 - If you cannot find the required information from the uploaded documents:
   - Apologize clearly.
   - Then ask the user whether they would like you to search the web for that information.
-- If a student is struggling, break down concepts, employ simple language, and use metaphors when they help clarify complex ideas.
 `;
 
 export const GUARDRAILS_PROMPT = `
@@ -76,9 +79,13 @@ ${TOOL_CALLING_OPTIONS}
 ${TOOL_CALLING_BEHAVIOR_RULES}
 </tool_behavior_rules>
 
-<tool_followup_rules>
-${TOOL_CALLING_FOLLOWUP_RULES}
-</tool_followup_rules>
+<tool_followup_rules_yes>
+${TOOL_CALLING_FOLLOWUP_RULES_YES}
+</tool_followup_rules_yes>
+
+<tool_followup_rules_no>
+${TOOL_CALLING_FOLLOWUP_RULES_NO}
+</tool_followup_rules_no>
 
 <tool_other_rules>
 ${TOOL_CALLING_OTHER_RULES}
