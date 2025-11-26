@@ -9,11 +9,13 @@ export const TOOL_CALLING_PROMPT = `
 - In order to be as truthful as possible, call tools to gather context before answering.
 `;
 
-export const TOOL_CALLING_RULES = `
+export const TOOL_CALLING_OPTIONS = `
 You have access to these tools:
 1) knowledgeBaseSearch: searches ONLY the uploaded documents.
 2) webSearch: searches the public web.
+`;
 
+export const TOOL_CALLING_BEHAVIOR_RULES = `
 Behavior rules:
 - Always FIRST call knowledgeBaseSearch with the user's full query.
 - If knowledgeBaseSearch returns relevant results, answer using ONLY those.
@@ -21,7 +23,9 @@ Behavior rules:
   - Do NOT call webSearch in the same turn.
   - In your reply, clearly say that you couldn't find the information in the uploaded documents.
   - Then explicitly ASK the user: "Would you like me to search the web for this?"
+`;
 
+export const TOOL_CALLING_FOLLOWUP_RULES = `
 Follow-up rules:
 - If the user says "yes", "okay", or otherwise gives clear consent to use the web:
   - Call webSearch with the user's query.
@@ -29,7 +33,9 @@ Follow-up rules:
 - If the user says "no" or declines web search:
   - Do NOT call webSearch.
   - Politely ask what else you can help them with and suggest related ways you could assist using the existing knowledge base.
+`;
 
+export const TOOL_CALLING_OTHER_RULES = `
 IMPORTANT:
 - Treat knowledgeBaseSearch returning "[]", [], "", or any empty object as "no results found".
 - NEVER call webSearch before you have tried knowledgeBaseSearch for that query.
@@ -62,9 +68,21 @@ ${IDENTITY_PROMPT}
 ${TOOL_CALLING_PROMPT}
 </tool_calling>
 
-<tool_rules>
-${TOOL_CALLING_RULES}
-</tool_rules>
+<tool_options>
+${TOOL_CALLING_OPTIONS}
+</tool_options>
+
+<tool_behavior_rules>
+${TOOL_CALLING_BEHAVIOR_RULES}
+</tool_behavior_rules>
+
+<tool_followup_rules>
+${TOOL_CALLING_FOLLOWUP_RULES}
+</tool_followup_rules>
+
+<tool_other_rules>
+${TOOL_CALLING_OTHER_RULES}
+</tool_other_rules>
 
 <tone_style>
 ${TONE_STYLE_PROMPT}
