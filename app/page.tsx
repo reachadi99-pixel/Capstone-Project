@@ -212,7 +212,13 @@ export default function Chat() {
           <div className="flex flex-col items-center justify-end min-h-full">
           {isClient ? (
   <>
-    {/* All chat messages first */}
+    {showCompare && (
+      <CollegeCompare
+        defaults={compareDefaults}
+        onSend={(content) => sendMessage({ text: content })}
+      />
+    )}
+
     <MessageWall
       messages={messages}
       status={status}
@@ -220,21 +226,17 @@ export default function Chat() {
       onDurationChange={handleDurationChange}
     />
 
-    {/* Then the comparison UI, directly under the last message */}
-    {showCompare && (
-      <div className="max-w-3xl w-full mt-4 mb-4">
-        <CollegeCompare
-  defaults={compareDefaults}
-  onSend={(content) => sendMessage({ text: content })}
-/>
-      </div>
-    )}
-
     {status === "submitted" && (
       <div className="flex justify-start max-w-3xl w-full">
         <Loader2 className="size-4 animate-spin text-muted-foreground" />
       </div>
     )}
+  </>
+) : (
+  <div className="flex justify-center max-w-2xl w-full">
+    <Loader2 className="size-4 animate-spin text-muted-foreground" />
+  </div>
+)}
   </>
 ) : (
 
