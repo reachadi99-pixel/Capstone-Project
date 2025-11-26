@@ -71,7 +71,11 @@ export default function Chat() {
   const [durations, setDurations] = useState<Record<string, number>>({});
   const welcomeMessageShownRef = useRef<boolean>(false);
   const [showCompare, setShowCompare] = useState(false);
-
+  const [compareDefaults, setCompareDefaults] = useState<{
+  collegeA?: string;
+  collegeB?: string;
+}>({});
+ 
   const stored = typeof window !== 'undefined' ? loadMessagesFromStorage() : { messages: [], durations: {} };
   const [initialMessages] = useState<UIMessage[]>(stored.messages);
 
@@ -131,29 +135,33 @@ export default function Chat() {
   const isCompareIntent = lower.includes("compare");
 
   if (isCompareIntent) {
-    // 1) show the comparison UI
-    setShowCompare(true);
+    // Very simple pattern: "compare X and Y" or "compare X vs Y"
+    const match = text.match(/compare\s+(.+?)\s+(vs|versus|and)\s+(.+)/i);
 
-    // 2) append the user's message as a bubble (without calling the model)
+    let collegeA: string | undefined;
+    let collegeB: string | undefined;
+
+    if (match) {
+      collegeA = match[1].trim();
+      collegeB = match[3].trim();
+    }
+
+    setShowCompare(true);
+    setCompareDefaults({ collegeA, collegeB });
+
+    // Append the user's message bubble, but don't call the model
     const newMessage: UIMessage = {
       id: `user-${Date.now()}`,
       role: "user",
-      parts: [
-        {
-          type: "text",
-          text,
-        },
-      ],
+      parts: [{ type: "text", text }],
     };
 
     setMessages((prev) => [...prev, newMessage]);
-
-    // 3) clear the input and STOP here (no sendMessage)
     form.reset();
     return;
   }
 
-  // Normal flow for non-comparison queries
+  // Normal flow for non-comparison messages
   sendMessage({ text });
   form.reset();
 }
