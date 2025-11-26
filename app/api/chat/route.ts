@@ -102,7 +102,7 @@ export async function POST(req: Request) {
       webSearch,
       vectorDatabaseSearch,
     },
-    //stopWhen: stepCountIs(10),
+    stopWhen: stepCountIs(10),
     providerOptions: {
       openai: {
         reasoningSummary: 'auto',
