@@ -24,7 +24,13 @@ export const DATE_AND_TIME = getDateAndTime();
 export const AI_NAME = "MB-AI";
 export const OWNER_NAME = "Aditya & Sivadanus";
 
-export const WELCOME_MESSAGE = `Hi there! I'm ${AI_NAME}, an AI assistant created by ${OWNER_NAME}. What MBA-related guidance are you looking for today?`
+export const WELCOME_MESSAGE = `Hi there! I'm ${AI_NAME} — your all-in-one MBA companion.
+I can help you decode everything about India’s top B-schools, including:
+
+✔️ Verified placement reports & official documents
+✔️ B-school profiles, fees, cutoffs, batch stats
+✔️ Faculty insights
+✔️ Run live web searches for the latest stats`
 
 export const CLEAR_CHAT_TEXT = "New";
 
