@@ -15,9 +15,10 @@ export const vectorDatabaseSearch = tool({
     try {
       console.log("[vectorDatabaseSearch] query:", query);
 
-      const results = await searchPinecone(query);
+      // Explicitly type as any so TS doesn't narrow to never
+      const results: any = await searchPinecone(query);
 
-      // No results or empty response
+      // Handle empty / missing results
       if (
         !results ||
         (Array.isArray(results) && results.length === 0) ||
@@ -26,15 +27,20 @@ export const vectorDatabaseSearch = tool({
         return "NO_RESULTS";
       }
 
-      // If searchPinecone already returns a string, just trim and cap length
+      // If searchPinecone already returns a string
       if (typeof results === "string") {
         return results.slice(0, 4000);
       }
 
-      // If it returns an array of objects, try to pull out text/content fields
+      // If searchPinecone returns an array of chunks/docs
       if (Array.isArray(results)) {
-        const combined = results
-          .map((r: any) => r.text || r.content || r.pageContent || "")
+        const arr = results as any[];
+
+        const combined = arr
+          .map(
+            (r: any) =>
+              r.text || r.content || r.pageContent || r.metadata?.text || ""
+          )
           .filter((t: string) => t && t.trim().length > 0)
           .join("\n\n");
 
@@ -45,7 +51,7 @@ export const vectorDatabaseSearch = tool({
         return combined.slice(0, 4000); // protect against huge outputs
       }
 
-      // Fallback: stringify anything else
+      // Fallback: stringify unknown shapes
       const asString = JSON.stringify(results);
       if (!asString || asString.trim().length === 0) {
         return "NO_RESULTS";
@@ -53,8 +59,7 @@ export const vectorDatabaseSearch = tool({
       return asString.slice(0, 4000);
     } catch (error) {
       console.error("[vectorDatabaseSearch] error:", error);
-      // Signal to the model that KB search failed; your prompt already
-      // tells it to apologize and consider web search in this case.
+      // Let the model know KB search failed; your prompt will handle this.
       return "ERROR_IN_KB_SEARCH";
     }
   },
