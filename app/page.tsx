@@ -224,8 +224,9 @@ export default function Chat() {
     {showCompare && (
       <div className="max-w-3xl w-full mt-4 mb-4">
         <CollegeCompare
-          onSend={(content) => sendMessage({ text: content })}
-        />
+  defaults={compareDefaults}
+  onSend={(content) => sendMessage({ text: content })}
+/>
       </div>
     )}
 
