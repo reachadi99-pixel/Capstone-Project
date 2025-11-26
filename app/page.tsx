@@ -209,13 +209,7 @@ export default function Chat() {
   </>
 ) : (
 
-    {status === "submitted" && (
-      <div className="flex justify-start max-w-3xl w-full">
-        <Loader2 className="size-4 animate-spin text-muted-foreground" />
-      </div>
-    )}
-  </>
-) : (
+
               <div className="flex justify-center max-w-2xl w-full">
                 <Loader2 className="size-4 animate-spin text-muted-foreground" />
               </div>
