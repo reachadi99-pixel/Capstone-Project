@@ -147,6 +147,7 @@ export default function Chat() {
     const newDurations = {};
     setMessages(newMessages);
     setDurations(newDurations);
+    setShowCompare(false);
     saveMessagesToStorage(newMessages, newDurations);
     toast.success("Chat cleared");
   }
@@ -185,20 +186,28 @@ export default function Chat() {
         </div>
         <div className="h-screen overflow-y-auto px-5 py-4 w-full pt-[88px] pb-[150px]">
           <div className="flex flex-col items-center justify-end min-h-full">
-            {isClient ? (
+          {isClient ? (
   <>
-    {/* College comparison panel */}
-    <div className="max-w-3xl w-full mb-4">
-      <CollegeCompare onSend={(content) => sendMessage({ text: content })} />
-    </div>
+    {showCompare && (
+      <div className="max-w-3xl w-full mb-4">
+        <CollegeCompare onSend={(content) => sendMessage({ text: content })} />
+      </div>
+    )}
 
-    {/* Existing messages */}
     <MessageWall
       messages={messages}
       status={status}
       durations={durations}
       onDurationChange={handleDurationChange}
     />
+
+    {status === "submitted" && (
+      <div className="flex justify-start max-w-3xl w-full">
+        <Loader2 className="size-4 animate-spin text-muted-foreground" />
+      </div>
+    )}
+  </>
+) : (
 
     {status === "submitted" && (
       <div className="flex justify-start max-w-3xl w-full">
