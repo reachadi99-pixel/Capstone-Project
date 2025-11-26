@@ -80,9 +80,13 @@ export function CollegeCompare({ onSend, defaults }: CollegeCompareProps) {
     );
   };
 
-  const handleCompare = () => { if (!collegeA || !collegeB || selectedParams.length === 0) 
-    return; 
-    const message = Compare ${collegeA} and ${collegeB} on these parameters: ${selectedParams.join( ", " )}. Show the answer in a clear markdown table.; onSend(message); };
+  const handleCompare = () => {
+  if (!collegeA || !collegeB || selectedParams.length === 0) return;
+
+  const message = `Compare ${collegeA} and ${collegeB} on these parameters: ${selectedParams.join(", ")}. Show the answer in a clear markdown table.`;
+
+  onSend(message);
+};
 
   return (
     <div className="border rounded-lg p-3 mb-3 text-sm bg-gray-50">
