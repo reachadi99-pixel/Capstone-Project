@@ -6,21 +6,21 @@ import { toast } from "sonner";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useChat } from "@ai-sdk/react";
-import { ArrowUp, Eraser, Loader2, Plus, PlusIcon, Square } from "lucide-react";
+import { ArrowUp, Loader2, Plus, Square } from "lucide-react";
 import { MessageWall } from "@/components/messages/message-wall";
-import { ChatHeader } from "@/app/parts/chat-header";
-import { ChatHeaderBlock } from "@/app/parts/chat-header";
+import { ChatHeader, ChatHeaderBlock } from "@/app/parts/chat-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UIMessage } from "ai";
 import { useEffect, useState, useRef } from "react";
-import { AI_NAME, CLEAR_CHAT_TEXT, OWNER_NAME, WELCOME_MESSAGE } from "@/config";
+import {
+  AI_NAME,
+  CLEAR_CHAT_TEXT,
+  OWNER_NAME,
+  WELCOME_MESSAGE,
+} from "@/config";
 import Image from "next/image";
 import Link from "next/link";
 import { CollegeCompare } from "@/components/CollegeCompare";
@@ -32,15 +32,18 @@ const formSchema = z.object({
     .max(2000, "Message must be at most 2000 characters."),
 });
 
-const STORAGE_KEY = 'chat-messages';
+const STORAGE_KEY = "chat-messages";
 
 type StorageData = {
   messages: UIMessage[];
   durations: Record<string, number>;
 };
 
-const loadMessagesFromStorage = (): { messages: UIMessage[]; durations: Record<string, number> } => {
-  if (typeof window === 'undefined') return { messages: [], durations: {} };
+const loadMessagesFromStorage = (): {
+  messages: UIMessage[];
+  durations: Record<string, number>;
+} => {
+  if (typeof window === "undefined") return { messages: [], durations: {} };
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return { messages: [], durations: {} };
@@ -51,33 +54,53 @@ const loadMessagesFromStorage = (): { messages: UIMessage[]; durations: Record<s
       durations: parsed.durations || {},
     };
   } catch (error) {
-    console.error('Failed to load messages from localStorage:', error);
+    console.error("Failed to load messages from localStorage:", error);
     return { messages: [], durations: {} };
   }
 };
 
-const saveMessagesToStorage = (messages: UIMessage[], durations: Record<string, number>) => {
-  if (typeof window === 'undefined') return;
+const saveMessagesToStorage = (
+  messages: UIMessage[],
+  durations: Record<string, number>
+) => {
+  if (typeof window === "undefined") return;
   try {
     const data: StorageData = { messages, durations };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch (error) {
-    console.error('Failed to save messages to localStorage:', error);
+    console.error("Failed to save messages to localStorage:", error);
   }
 };
+
+// --- helper to parse "compare X and Y" ---
+function parseCompareColleges(text: string): {
+  collegeA?: string;
+  collegeB?: string;
+} {
+  const match = text.match(/compare\s+(.+?)\s+(?:vs|versus|and)\s+(.+)/i);
+  if (!match) return {};
+  return {
+    collegeA: match[1].trim(),
+    collegeB: match[2].trim(),
+  };
+}
 
 export default function Chat() {
   const [isClient, setIsClient] = useState(false);
   const [durations, setDurations] = useState<Record<string, number>>({});
   const welcomeMessageShownRef = useRef<boolean>(false);
+
+  const stored =
+    typeof window !== "undefined"
+      ? loadMessagesFromStorage()
+      : { messages: [], durations: {} };
+  const [initialMessages] = useState<UIMessage[]>(stored.messages);
+
   const [showCompare, setShowCompare] = useState(false);
   const [compareDefaults, setCompareDefaults] = useState<{
-  collegeA?: string;
-  collegeB?: string;
-}>({});
- 
-  const stored = typeof window !== 'undefined' ? loadMessagesFromStorage() : { messages: [], durations: {} };
-  const [initialMessages] = useState<UIMessage[]>(stored.messages);
+    collegeA?: string;
+    collegeB?: string;
+  }>({});
 
   const { messages, sendMessage, status, stop, setMessages } = useChat({
     messages: initialMessages,
@@ -87,6 +110,7 @@ export default function Chat() {
     setIsClient(true);
     setDurations(stored.durations);
     setMessages(stored.messages);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -104,7 +128,11 @@ export default function Chat() {
   };
 
   useEffect(() => {
-    if (isClient && initialMessages.length === 0 && !welcomeMessageShownRef.current) {
+    if (
+      isClient &&
+      initialMessages.length === 0 &&
+      !welcomeMessageShownRef.current
+    ) {
       const welcomeMessage: UIMessage = {
         id: `welcome-${Date.now()}`,
         role: "assistant",
@@ -119,6 +147,7 @@ export default function Chat() {
       saveMessagesToStorage([welcomeMessage], {});
       welcomeMessageShownRef.current = true;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClient, initialMessages.length, setMessages]);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -129,64 +158,56 @@ export default function Chat() {
   });
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-  const text = data.message;
-  const lower = text.toLowerCase();
+    const text = data.message;
+    const lower = text.toLowerCase();
 
-  const isCompareIntent = lower.includes("compare");
+    const isCompareIntent = lower.includes("compare");
 
-  if (isCompareIntent) {
-    // Try to parse: "compare X and Y" / "compare X vs Y" / "compare X versus Y"
-    const match = text.match(/compare\s+(.+?)\s+(?:vs|versus|and)\s+(.+)/i);
+    if (isCompareIntent) {
+      // 1) parse colleges (if possible)
+      const parsed = parseCompareColleges(text);
+      setCompareDefaults(parsed);
+      setShowCompare(true);
 
-    let collegeA: string | undefined;
-    let collegeB: string | undefined;
+      // 2) show user message as normal chat bubble
+      const newMessage: UIMessage = {
+        id: `user-${Date.now()}`,
+        role: "user",
+        parts: [{ type: "text", text }],
+      };
+      setMessages((prev) => [...prev, newMessage]);
 
-    if (match) {
-      collegeA = match[1].trim();
-      collegeB = match[2].trim();
+      // 3) don't call the model yet (dropdown will send the real compare query)
+      form.reset();
+      return;
     }
 
-    setShowCompare(true);
-    setCompareDefaults({ collegeA, collegeB });
-
-    // Show the user query as a bubble, but do NOT call the model yet
-    const newMessage: UIMessage = {
-      id: `user-${Date.now()}`,
-      role: "user",
-      parts: [{ type: "text", text }],
-    };
-
-    setMessages((prev) => [...prev, newMessage]);
+    // normal flow for non-comparison messages
+    sendMessage({ text });
     form.reset();
-    return;
   }
-
-  // Normal chat flow
-  sendMessage({ text });
-  form.reset();
-}
 
   function clearChat() {
     const newMessages: UIMessage[] = [];
-    const newDurations = {};
+    const newDurations: Record<string, number> = {};
     setMessages(newMessages);
     setDurations(newDurations);
-    setShowCompare(false);
     saveMessagesToStorage(newMessages, newDurations);
+    setShowCompare(false);
+    setCompareDefaults({});
     toast.success("Chat cleared");
   }
 
   return (
     <div className="flex h-screen items-center justify-center font-sans dark:bg-black">
       <main className="w-full dark:bg-black h-screen relative">
+        {/* Header */}
         <div className="fixed top-0 left-0 right-0 z-50 bg-linear-to-b from-background via-background/50 to-transparent dark:bg-black overflow-visible pb-16">
           <div className="relative overflow-visible">
             <ChatHeader>
               <ChatHeaderBlock />
               <ChatHeaderBlock className="justify-center items-center">
-                <Avatar
-                  className="size-8 ring-1 ring-primary"
-                >
+                <Avatar className="size-8 ring-1 ring-primary">
                   <AvatarImage src="/logo.png" />
                   <AvatarFallback>
                     <Image src="/logo.png" alt="Logo" width={36} height={36} />
@@ -208,44 +229,46 @@ export default function Chat() {
             </ChatHeader>
           </div>
         </div>
+
+        {/* Scrollable chat area */}
         <div className="h-screen overflow-y-auto px-5 py-4 w-full pt-[88px] pb-[150px]">
           <div className="flex flex-col items-center justify-end min-h-full">
-          {isClient ? (
-  <>
-    {showCompare && (
-      <CollegeCompare
-        defaults={compareDefaults}
-        onSend={(content) => sendMessage({ text: content })}
-      />
-    )}
+            {isClient ? (
+              <>
+                {/* Comparison UI (appears when user asks to compare) */}
+                {showCompare && (
+                  <div className="max-w-3xl w-full mb-3">
+                    <CollegeCompare
+                      defaults={compareDefaults}
+                      onSend={(content) => sendMessage({ text: content })}
+                    />
+                  </div>
+                )}
 
-    <MessageWall
-      messages={messages}
-      status={status}
-      durations={durations}
-      onDurationChange={handleDurationChange}
-    />
+                {/* All chat messages */}
+                <MessageWall
+                  messages={messages}
+                  status={status}
+                  durations={durations}
+                  onDurationChange={handleDurationChange}
+                />
 
-    {status === "submitted" && (
-      <div className="flex justify-start max-w-3xl w-full">
-        <Loader2 className="size-4 animate-spin text-muted-foreground" />
-      </div>
-    )}
-  </>
-) : (
-  <div className="flex justify-center max-w-2xl w-full">
-    <Loader2 className="size-4 animate-spin text-muted-foreground" />
-  </div>
-)}
-  </>
-) : (
-
+                {/* Loading indicator while streaming */}
+                {status === "submitted" && (
+                  <div className="flex justify-start max-w-3xl w-full">
+                    <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                  </div>
+                )}
+              </>
+            ) : (
               <div className="flex justify-center max-w-2xl w-full">
                 <Loader2 className="size-4 animate-spin text-muted-foreground" />
               </div>
             )}
           </div>
         </div>
+
+        {/* Input bar */}
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-linear-to-t from-background via-background/50 to-transparent dark:bg-black overflow-visible pt-13">
           <div className="w-full px-5 pt-5 pb-1 items-center flex justify-center relative overflow-visible">
             <div className="message-fade-overlay" />
@@ -257,7 +280,10 @@ export default function Chat() {
                     control={form.control}
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor="chat-form-message" className="sr-only">
+                        <FieldLabel
+                          htmlFor="chat-form-message"
+                          className="sr-only"
+                        >
                           Message
                         </FieldLabel>
                         <div className="relative h-13">
@@ -276,7 +302,7 @@ export default function Chat() {
                               }
                             }}
                           />
-                          {(status == "ready" || status == "error") && (
+                          {(status === "ready" || status === "error") && (
                             <Button
                               className="absolute right-3 top-3 rounded-full"
                               type="submit"
@@ -286,7 +312,8 @@ export default function Chat() {
                               <ArrowUp className="size-4" />
                             </Button>
                           )}
-                          {(status == "streaming" || status == "submitted") && (
+                          {(status === "streaming" ||
+                            status === "submitted") && (
                             <Button
                               className="absolute right-2 top-2 rounded-full"
                               size="icon"
@@ -306,10 +333,17 @@ export default function Chat() {
             </div>
           </div>
           <div className="w-full px-5 py-3 items-center flex justify-center text-xs text-muted-foreground">
-            © {new Date().getFullYear()} {OWNER_NAME}&nbsp;<Link href="/terms" className="underline">Terms of Use</Link>&nbsp;Powered by&nbsp;<Link href="https://ringel.ai/" className="underline">Ringel.AI</Link>
+            © {new Date().getFullYear()} {OWNER_NAME}&nbsp;
+            <Link href="/terms" className="underline">
+              Terms of Use
+            </Link>
+            &nbsp;Powered by&nbsp;
+            <Link href="https://ringel.ai/" className="underline">
+              Ringel.AI
+            </Link>
           </div>
         </div>
       </main>
-    </div >
+    </div>
   );
 }
