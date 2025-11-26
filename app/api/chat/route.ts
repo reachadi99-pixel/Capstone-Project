@@ -5,7 +5,9 @@ import {
   stepCountIs,
   createUIMessageStream,
   createUIMessageStreamResponse,
+  SystemMessage,
 } from 'ai';
+
 import { MODEL } from '@/config';
 import {
   IDENTITY_PROMPT,
@@ -18,7 +20,9 @@ import {
   TONE_STYLE_PROMPT,
   GUARDRAILS_PROMPT,
   CITATIONS_PROMPT,
+  DATE_AND_TIME,
 } from '@/prompts';
+
 import { isContentFlagged } from '@/lib/moderation';
 import { webSearch } from './tools/web-search';
 import { vectorDatabaseSearch } from './tools/search-vector-database';
@@ -28,9 +32,10 @@ export const maxDuration = 30;
 export async function POST(req: Request) {
   const { messages }: { messages: UIMessage[] } = await req.json();
 
-  const latestUserMessage = messages
-    .filter(msg => msg.role === 'user')
-    .pop();
+  // --------------------------------------------------
+  // Moderation guardrail
+  // --------------------------------------------------
+  const latestUserMessage = messages.filter(m => m.role === 'user').pop();
 
   if (latestUserMessage) {
     const textParts = latestUserMessage.parts
@@ -48,10 +53,7 @@ export async function POST(req: Request) {
 
             writer.write({ type: 'start' });
 
-            writer.write({
-              type: 'text-start',
-              id: textId,
-            });
+            writer.write({ type: 'text-start', id: textId });
 
             writer.write({
               type: 'text-delta',
@@ -61,10 +63,7 @@ export async function POST(req: Request) {
                 "Your message violates our guidelines. I can't answer that.",
             });
 
-            writer.write({
-              type: 'text-end',
-              id: textId,
-            });
+            writer.write({ type: 'text-end', id: textId });
 
             writer.write({ type: 'finish' });
           },
@@ -75,8 +74,11 @@ export async function POST(req: Request) {
     }
   }
 
-  // ✅ Split system instructions as multiple system messages
-  const systemMessages = [
+  // --------------------------------------------------
+  // SYSTEM PROMPT SPLIT INTO MULTIPLE INSTRUCTIONS
+  // --------------------------------------------------
+
+  const systemMessages: SystemMessage[] = [
     { role: 'system', content: IDENTITY_PROMPT },
     { role: 'system', content: TOOL_CALLING_PROMPT },
     { role: 'system', content: TOOL_CALLING_OPTIONS },
@@ -87,13 +89,18 @@ export async function POST(req: Request) {
     { role: 'system', content: TONE_STYLE_PROMPT },
     { role: 'system', content: GUARDRAILS_PROMPT },
     { role: 'system', content: CITATIONS_PROMPT },
+    { role: 'system', content: DATE_AND_TIME },
   ];
+
+  // --------------------------------------------------
+  // MAIN MODEL EXECUTION
+  // --------------------------------------------------
 
   const result = streamText({
     model: MODEL,
     messages: [
-      ...systemMessages,
-      ...convertToModelMessages(messages),
+      ...systemMessages,                // ⬅ inject rules here
+      ...convertToModelMessages(messages), // ⬅ user + history
     ],
     tools: {
       webSearch,
