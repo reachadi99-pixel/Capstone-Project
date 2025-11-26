@@ -19,6 +19,11 @@ export const webSearch = tool({
           text: true,
         },
         numResults: 3,
+        includeDomains: [
+  "https://cracku.in",
+  "https://www.imsindia.com/",
+  "https://shiksha.com",
+]
       });
 
       if (!results || results.length === 0) {
