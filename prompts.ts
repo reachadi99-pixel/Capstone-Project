@@ -11,7 +11,7 @@ export const TOOL_CALLING_PROMPT = `
 
 export const TOOL_CALLING_RULES = `
 You have access to these tools:
-1) knowledgeBaseSearch: searches ONLY the uploaded course documents.
+1) knowledgeBaseSearch: searches ONLY the uploaded documents.
 2) webSearch: searches the public web.
 
 Behavior rules:
@@ -55,6 +55,10 @@ ${IDENTITY_PROMPT}
 <tool_calling>
 ${TOOL_CALLING_PROMPT}
 </tool_calling>
+
+<tool_rules>
+${TOOL_CALLING_RULES}
+</tool_rules>
 
 <tone_style>
 ${TONE_STYLE_PROMPT}
