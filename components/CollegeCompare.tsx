@@ -3,11 +3,15 @@
 import { useState } from "react";
 
 const COLLEGES = [
-  "ISB Hyderabad",
   "IIM Ahmedabad",
   "IIM Bangalore",
   "IIM Calcutta",
   "IIM Lucknow",
+  "IIM Kozhikode",
+  "XLRI Jamshedpur",
+  "SPJIMR Mumbai",
+  "IIM Mumbai",
+  "IIM Udaipur",
   "BITSoM",
 ];
 
