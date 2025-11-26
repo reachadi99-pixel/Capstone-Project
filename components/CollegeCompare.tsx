@@ -84,9 +84,8 @@ export function CollegeCompare({ onSend, defaults }: CollegeCompareProps) {
   const handleCompare = () => {
   if (!collegeA || !collegeB || selectedParams.length === 0) return;
 
-  const message = `Compare ${collegeA} and ${collegeB} on ${selectedParams.join(", ")}`;
-
-  onSend(message);
+const message = `Compare ${collegeA} and ${collegeB} for the 2024 batch on ${selectedParams.join(", ")}`;
+onSend(message);
 };
 
   return (
