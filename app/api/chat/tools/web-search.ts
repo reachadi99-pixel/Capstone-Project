@@ -2,6 +2,7 @@ import { tool } from 'ai';
 import { z } from 'zod';
 import Exa from 'exa-js';
 
+// Make sure EXA_API_KEY is set in your environment
 const exa = new Exa(process.env.EXA_API_KEY);
 
 export const webSearch = tool({
@@ -11,6 +12,8 @@ export const webSearch = tool({
   }),
   execute: async ({ query }) => {
     try {
+      console.log('[webSearch] query:', query);
+
       const { results } = await exa.search(query, {
         contents: {
           text: true,
@@ -18,15 +21,27 @@ export const webSearch = tool({
         numResults: 3,
       });
 
-      return results.map(result => ({
-        title: result.title,
-        url: result.url,
-        content: result.text?.slice(0, 1000) || '',
-        publishedDate: result.publishedDate,
-      }));
+      if (!results || results.length === 0) {
+        return `I searched the web for "${query}" but couldn't find any relevant results.`;
+      }
+
+      // Build a readable summary string for the model to work with
+      const summary = results
+        .map((result, index) => {
+          const snippet =
+            result.text?.slice(0, 300)?.replace(/\s+/g, ' ') || '';
+          const date = result.publishedDate
+            ? ` (published: ${result.publishedDate})`
+            : '';
+          return `${index + 1}. ${result.title}${date}\n${result.url}\n${snippet}`;
+        })
+        .join('\n\n');
+
+      // Always return a plain string – easiest for the model to consume
+      return `Here are some web search results for "${query}":\n\n${summary}`;
     } catch (error) {
       console.error('Error searching the web:', error);
-      return [];
+      return `I tried to search the web for "${query}", but there was an internal error while fetching results.`;
     }
   },
 });
