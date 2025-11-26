@@ -1,4 +1,5 @@
-// components/CollegeCompare.tsx
+"use client";
+
 import { useState } from "react";
 
 const COLLEGES = [
@@ -8,10 +9,6 @@ const COLLEGES = [
   "IIM Calcutta",
   "IIM Lucknow",
   "BITSoM",
-  "SPJIMR",
-"XLRI",
-"IIM Mumbai",
-"IIM Udaipur"
 ];
 
 const PARAMETERS = [
@@ -19,19 +16,22 @@ const PARAMETERS = [
   "Highest CTC",
   "Average CTC",
   "Batch Size",
-  "Total Offers",
   "Program Fee",
 ];
 
-export function CollegeCompare({ onSend }: { onSend: (content: string) => void }) {
+type CollegeCompareProps = {
+  onSend: (content: string) => void;
+};
+
+export function CollegeCompare({ onSend }: CollegeCompareProps) {
   const [collegeA, setCollegeA] = useState("");
   const [collegeB, setCollegeB] = useState("");
   const [selectedParams, setSelectedParams] = useState<string[]>([]);
 
   const toggleParam = (param: string) => {
-    setSelectedParams(prev =>
+    setSelectedParams((prev) =>
       prev.includes(param)
-        ? prev.filter(p => p !== param)
+        ? prev.filter((p) => p !== param)
         : [...prev, param]
     );
   };
@@ -39,15 +39,9 @@ export function CollegeCompare({ onSend }: { onSend: (content: string) => void }
   const handleCompare = () => {
     if (!collegeA || !collegeB || selectedParams.length === 0) return;
 
-    const payload = {
-      collegeA,
-      collegeB,
-      parameters: selectedParams,
-    };
-
-    const message = `Compare these two colleges and show the results in a markdown table: ${JSON.stringify(
-      payload
-    )}`;
+    const message = `Compare ${collegeA} and ${collegeB} on these parameters: ${selectedParams.join(
+      ", "
+    )}. Show the answer in a clear markdown table.`;
 
     onSend(message);
   };
@@ -60,22 +54,26 @@ export function CollegeCompare({ onSend }: { onSend: (content: string) => void }
         <select
           className="flex-1 border rounded px-2 py-1"
           value={collegeA}
-          onChange={e => setCollegeA(e.target.value)}
+          onChange={(e) => setCollegeA(e.target.value)}
         >
           <option value="">College 1</option>
-          {COLLEGES.map(c => (
-            <option key={c} value={c}>{c}</option>
+          {COLLEGES.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
           ))}
         </select>
 
         <select
           className="flex-1 border rounded px-2 py-1"
           value={collegeB}
-          onChange={e => setCollegeB(e.target.value)}
+          onChange={(e) => setCollegeB(e.target.value)}
         >
           <option value="">College 2</option>
-          {COLLEGES.map(c => (
-            <option key={c} value={c}>{c}</option>
+          {COLLEGES.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
           ))}
         </select>
       </div>
@@ -83,7 +81,7 @@ export function CollegeCompare({ onSend }: { onSend: (content: string) => void }
       <div className="mb-2">
         <div className="mb-1 text-xs text-gray-600">Parameters</div>
         <div className="flex flex-wrap gap-2">
-          {PARAMETERS.map(p => (
+          {PARAMETERS.map((p) => (
             <label key={p} className="flex items-center gap-1 text-xs">
               <input
                 type="checkbox"
