@@ -135,21 +135,21 @@ export default function Chat() {
   const isCompareIntent = lower.includes("compare");
 
   if (isCompareIntent) {
-    // Very simple pattern: "compare X and Y" or "compare X vs Y"
-    const match = text.match(/compare\s+(.+?)\s+(vs|versus|and)\s+(.+)/i);
+    // Try to parse: "compare X and Y" / "compare X vs Y" / "compare X versus Y"
+    const match = text.match(/compare\s+(.+?)\s+(?:vs|versus|and)\s+(.+)/i);
 
     let collegeA: string | undefined;
     let collegeB: string | undefined;
 
     if (match) {
       collegeA = match[1].trim();
-      collegeB = match[3].trim();
+      collegeB = match[2].trim();
     }
 
     setShowCompare(true);
     setCompareDefaults({ collegeA, collegeB });
 
-    // Append the user's message bubble, but don't call the model
+    // Show the user query as a bubble, but do NOT call the model yet
     const newMessage: UIMessage = {
       id: `user-${Date.now()}`,
       role: "user",
@@ -161,7 +161,7 @@ export default function Chat() {
     return;
   }
 
-  // Normal flow for non-comparison messages
+  // Normal chat flow
   sendMessage({ text });
   form.reset();
 }
