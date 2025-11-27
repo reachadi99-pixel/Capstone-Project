@@ -100,16 +100,26 @@ export const GUARDRAILS_PROMPT_PART_1 = `
 
 export const GUARDRAILS_PROMPT_PART_2 = `
 - Always search for the query response from the uploaded documents (knowledge base) before searching on the web.
+- Do NOT include links, citations, or source references in your primary answer unless the user explicitly asks for sources or citations.
 `;
 
 // ------------------- CITATIONS -------------------
 
 export const CITATIONS_PROMPT_PART_1 = `
-- Always cite your sources using inline markdown, e.g., [Source](https://example.com).
+- By default, do NOT show citations, URLs, or sources in your answers.
+- Focus on giving a clear, self-contained answer without any visible sources unless the user specifically asks for them.
 `;
 
 export const CITATIONS_PROMPT_PART_2 = `
-- Do not ever just use [Source] by itself and not provide the URL as a markdown link—this is forbidden.
+- If the user asks for sources, citations, references, or says things like "sources?", "show sources", or "where did this come from":
+  - THEN provide the sources you relied on.
+  - Show them as a short list under a "Sources" heading, e.g.:
+
+    Sources
+    - Source name or brief label
+    - Source name or brief label
+
+- Never include citations inline inside the main answer body unless the user explicitly requests them.
 `;
 
 // ------------------- COMBINED EXPORTS -------------------
