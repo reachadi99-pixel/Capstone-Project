@@ -9,30 +9,29 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useChat } from "@ai-sdk/react";
-import { 
-  ArrowUp, 
-  Loader2, 
-  Plus, 
-  Square, 
-  GraduationCap, 
-  TrendingUp, 
-  Building2, 
+import {
+  ArrowUp,
+  Loader2,
+  Plus,
+  Square,
+  GraduationCap,
+  TrendingUp,
+  Building2,
   Users,
   Sparkles,
   MessageCircle,
   BarChart3,
-  Target
+  Target,
 } from "lucide-react";
 import { MessageWall } from "@/components/messages/message-wall";
 import { UIMessage } from "ai";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   AI_NAME,
   CLEAR_CHAT_TEXT,
   OWNER_NAME,
   WELCOME_MESSAGE,
 } from "@/config";
-import Image from "next/image";
 import Link from "next/link";
 
 const formSchema = z.object({
@@ -99,26 +98,30 @@ const QUICK_PROMPTS = [
     icon: Building2,
     title: "Compare Colleges",
     description: "IIM vs ISB vs Top B-Schools",
-    prompt: "Compare IIM Ahmedabad and IIM Bangalore for MBA placements and ROI"
+    prompt:
+      "Compare IIM Ahmedabad and IIM Bangalore for MBA placements and ROI",
   },
   {
     icon: TrendingUp,
     title: "Placement Insights",
     description: "Salary trends & recruiters",
-    prompt: "What are the latest placement statistics and top recruiters at IIM Calcutta?"
+    prompt:
+      "What are the latest placement statistics and top recruiters at IIM Calcutta?",
   },
   {
     icon: Target,
     title: "Admission Strategy",
     description: "Cutoffs & selection criteria",
-    prompt: "What CAT percentile and profile is needed for IIM Lucknow admission?"
+    prompt:
+      "What CAT percentile and profile is needed for IIM Lucknow admission?",
   },
   {
     icon: BarChart3,
     title: "ROI Analysis",
     description: "Fees vs career outcomes",
-    prompt: "Which MBA program offers the best ROI considering fees and average salary?"
-  }
+    prompt:
+      "Which MBA program offers the best ROI considering fees and average salary?",
+  },
 ];
 
 export default function Chat() {
@@ -243,10 +246,7 @@ export default function Chat() {
     if (m.role === "user") return true;
 
     const hasDisplayablePart = m.parts.some((part: any) => {
-      return (
-        part.type === "text" ||
-        part.type === "data-compare-ui"
-      );
+      return part.type === "text" || part.type === "data-compare-ui";
     });
 
     return hasDisplayablePart;
@@ -262,8 +262,12 @@ export default function Chat() {
               <GraduationCap className="h-5 w-5 text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="font-semibold text-foreground tracking-tight">{AI_NAME}</span>
-              <span className="text-xs text-muted-foreground">MBA Intelligence Assistant</span>
+              <span className="font-semibold text-foreground tracking-tight">
+                {AI_NAME}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                MBA Intelligence Assistant
+              </span>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -296,8 +300,9 @@ export default function Chat() {
                 Your Personal MBA Counsellor
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Get data-driven insights on B-schools, placements, fees, and career outcomes. 
-                Make informed decisions with verified information, not rumors.
+                Get data-driven insights on B-schools, placements, fees, and
+                career outcomes. Make informed decisions with verified
+                information, not rumors.
               </p>
             </div>
 
@@ -319,8 +324,12 @@ export default function Chat() {
                         <item.icon className="h-5 w-5" />
                       </div>
                       <div className="flex flex-col">
-                        <span className="font-medium text-foreground">{item.title}</span>
-                        <span className="text-sm text-muted-foreground">{item.description}</span>
+                        <span className="font-medium text-foreground">
+                          {item.title}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          {item.description}
+                        </span>
                       </div>
                     </div>
                   </button>
@@ -377,7 +386,7 @@ export default function Chat() {
         )}
       </main>
 
-      {/* Fixed Input Bar */}
+      {/* Fixed Input Bar + Footer */}
       <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container max-w-4xl mx-auto px-4 py-4">
           <form id="chat-form" onSubmit={form.handleSubmit(onSubmit)}>
@@ -419,7 +428,8 @@ export default function Chat() {
                           <ArrowUp className="h-5 w-5" />
                         </Button>
                       )}
-                      {(status === "streaming" || status === "submitted") && (
+                      {(status === "streaming" ||
+                        status === "submitted") && (
                         <Button
                           className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl h-10 w-10"
                           size="icon"
@@ -437,19 +447,33 @@ export default function Chat() {
               />
             </FieldGroup>
           </form>
-          <div className="flex items-center justify-center gap-4 mt-3 text-xs text-muted-foreground">
-            <span>&copy; 2025 {OWNER_NAME}</span>
-            <span className="text-border">|</span>
-            <Link href="/terms" className="hover:text-foreground transition-colors">
-              Terms of Use
-            </Link>
-            <span className="text-border">|</span>
-            <span>
-              Powered by{" "}
-              <Link href="https://ringel.ai/" className="hover:text-foreground transition-colors">
-                Ringel.AI
-              </Link>
+
+          {/* Footer with disclaimer */}
+          <div className="flex flex-col items-center gap-1 mt-3 text-xs text-muted-foreground">
+            <span className="text-[10px] text-muted-foreground">
+              AI may hallucinate. Please verify important information.
             </span>
+
+            <div className="flex items-center justify-center gap-4">
+              <span>&copy; 2025 {OWNER_NAME}</span>
+              <span className="text-border">|</span>
+              <Link
+                href="/terms"
+                className="hover:text-foreground transition-colors"
+              >
+                Terms of Use
+              </Link>
+              <span className="text-border">|</span>
+              <span>
+                Powered by{" "}
+                <Link
+                  href="https://ringel.ai/"
+                  className="hover:text-foreground transition-colors"
+                >
+                  Ringel.AI
+                </Link>
+              </span>
+            </div>
           </div>
         </div>
       </div>
