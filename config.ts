@@ -36,7 +36,7 @@ I help you make smarter B-school decisions using **verified data**, not rumours.
 Just tell me the college, parameter, or doubt you're evaluating — I'll decode it for you in seconds.
 
 What MBA-related query can I help you with today?`
-`;
+;
 
 export const CLEAR_CHAT_TEXT = "New";
 
