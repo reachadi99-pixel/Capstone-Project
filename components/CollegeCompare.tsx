@@ -8,6 +8,7 @@ const COLLEGES = [
   "IIM Calcutta",
   "IIM Lucknow",
   "IIM Kozhikode",
+  "IIM Indore",
   "XLRI Jamshedpur",
   "SPJIMR Mumbai",
   "IIM Mumbai",
