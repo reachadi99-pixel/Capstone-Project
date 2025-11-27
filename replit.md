@@ -79,6 +79,16 @@ The application requires the following environment variables (see env.template):
 - **Workflow**: "Start application" runs `npm run dev` on port 5000 with webview output
 
 ## Recent Changes
+- 2025-11-27: Professional UI Redesign
+  - Updated color scheme to professional navy/indigo theme
+  - Redesigned header with "MBA Mentor" branding
+  - Created elegant welcome hero section with quick action prompts
+  - Added four MBA-focused quick prompts: Compare Colleges, Placement Insights, Admission Strategy, ROI Analysis
+  - Added trust indicators: Verified Data Sources, Real-time Web Search, Official Placement Reports
+  - Updated message styling with gradient user bubbles and card-style assistant messages
+  - Updated branding from "MB-AI" to "MBA Mentor"
+  - Improved input field with contextual placeholder
+
 - 2025-11-27: Initial import from GitHub
   - Installed all npm dependencies
   - Configured Next.js for Replit environment (port 5000, host 0.0.0.0)
