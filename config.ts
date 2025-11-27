@@ -38,6 +38,19 @@ Just tell me the college, parameter, or doubt you're evaluating — I'll decode 
 What MBA-related query can I help you with today?`
 ;
 
+export const CAPABILITY_MESSAGE = `
+I’m MB-AI, an MBA intelligence assistant designed to help you evaluate B-schools with real, verified data.
+
+I can:
+• Compare any two MBA colleges across fees, placements, rankings, and batch stats  
+• Pull facts from official placement reports and run live web searches for missing data  
+• Decode recruiters, salaries, specialisations, program formats, and faculty strengths  
+• Help you understand cutoffs, ROI, scholarships, and career outcomes  
+• Translate all this into clear recommendations — no rumours, no outdated blogs
+
+Just tell me the college or question you’re evaluating, and I’ll break it down for you.
+`;
+
 export const CLEAR_CHAT_TEXT = "New";
 
 export const MODERATION_DENIAL_MESSAGE_SEXUAL = "I can't discuss explicit sexual content. Please ask something else.";
