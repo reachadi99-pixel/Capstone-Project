@@ -99,6 +99,9 @@ export default function Chat() {
     messages: initialMessages,
   });
 
+  // animated dots for "Analyzing your query..."
+  const [dotCount, setDotCount] = useState(0);
+
   useEffect(() => {
     setIsClient(true);
     setDurations(stored.durations);
@@ -111,6 +114,18 @@ export default function Chat() {
       saveMessagesToStorage(messages, durations);
     }
   }, [durations, messages, isClient]);
+
+  // animate "Analyzing your query..." while thinking
+  useEffect(() => {
+    if (status === "submitted" || status === "streaming") {
+      const interval = setInterval(() => {
+        setDotCount((prev) => (prev + 1) % 4); // cycles 0–3 dots
+      }, 450);
+      return () => clearInterval(interval);
+    } else {
+      setDotCount(0);
+    }
+  }, [status]);
 
   const handleDurationChange = (key: string, duration: number) => {
     setDurations((prevDurations) => {
@@ -266,10 +281,13 @@ export default function Chat() {
                   onSend={(content) => sendMessage({ text: content })}
                 />
 
-                {/* Loading indicator while streaming */}
-                {status === "submitted" && (
-                  <div className="flex justify-start max-w-3xl w-full">
-                    <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                {/* Thinking indicator while streaming/submitted */}
+                {(status === "submitted" || status === "streaming") && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground max-w-3xl w-full py-2">
+                    <Loader2 className="size-4 animate-spin" />
+                    <span>
+                      {`Analyzing your query${".".repeat(dotCount)}`}
+                    </span>
                   </div>
                 )}
               </>
