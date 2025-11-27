@@ -92,7 +92,20 @@ export async function POST(req: Request) {
   // --------------------------------------------------
   // MAIN EXECUTION
   // --------------------------------------------------
-  
+
+  const capabilityTriggers = [
+  "what do you do",
+  "what can you do",
+  "who are you",
+  "help",
+  "what is mb-ai",
+  "what can you help me with"
+];
+
+if (capabilityTriggers.some(q => userMessage.toLowerCase().includes(q))) {
+  return CAPABILITY_MESSAGE;
+}
+
   const result = streamText({
     model: MODEL,
     messages: [
