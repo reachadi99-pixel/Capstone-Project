@@ -26,11 +26,10 @@ This is the **primary file** you'll edit to customize your AI assistant. Located
 - **Welcome Message**: `WELCOME_MESSAGE` - The greeting users see when they first open the chat
 - **UI Text**: `CLEAR_CHAT_TEXT` - The label for the "New Chat" button
 - **Moderation Messages**: Custom messages shown when content is flagged (sexual content, harassment, hate speech, violence, self-harm, illegal activities)
-- **Model Configuration**: `MODEL` - The AI model being used (currently set to OpenAI's GPT-5-mini)
+- **Model Configuration**: `MODEL` - The AI model being used (currently set to OpenAI's GPT-4o-mini)
 - **Vector Database Settings**: `PINECONE_TOP_K` and `PINECONE_INDEX_NAME` - Settings for your knowledge base search
 
 **Example customization:**
-
 ```typescript
 export const AI_NAME = "Your Assistant Name";
 export const OWNER_NAME = "Your Name";
@@ -46,12 +45,11 @@ This file controls **how your AI assistant behaves and responds**. Located in th
 - **Tone & Style**: How the AI should communicate (friendly, helpful, educational)
 - **Guardrails**: What the AI should refuse to discuss
 - **Citation Rules**: How to cite sources in responses
-- **Course Context**: Domain-specific instructions (currently mentions course syllabus)
+- **Domain Context**: Domain-specific instructions (customizable for your use case)
 
 The prompts are modular, so you can edit individual sections without affecting others. The `SYSTEM_PROMPT` combines all these sections.
 
 **Example customization:**
-
 ```typescript
 export const TONE_STYLE_PROMPT = `
 - Maintain a professional, business-focused tone.
@@ -61,17 +59,16 @@ export const TONE_STYLE_PROMPT = `
 ```
 
 ## Project Structure
-
 ```text
 MB-AI/
 ├── app/                          # Next.js application files
 │   ├── api/chat/                 # Chat API endpoint
 │   │   ├── route.ts              # Main chat handler
-│   │   └── tools/                 # AI tools (web search, vector search)
+│   │   └── tools/                # AI tools (web search, vector search)
 │   ├── page.tsx                  # Main chat interface (UI)
 │   ├── parts/                    # UI components
 │   └── terms/                    # Terms of Use page
-├── components/                    # React components
+├── components/                   # React components
 │   ├── ai-elements/              # AI-specific UI components
 │   ├── messages/                 # Message display components
 │   └── ui/                       # Reusable UI components
@@ -129,9 +126,9 @@ Configure environment variables in your Vercel project settings (Settings → En
 
 **Where to get API keys:**
 
-- **OpenAI**: <https://platform.openai.com/api-keys> (required)
-- **Exa**: <https://dashboard.exa.ai/> (optional)
-- **Pinecone**: <https://app.pinecone.io/> (optional)
+- **OpenAI**: https://platform.openai.com/api-keys (required)
+- **Exa**: https://dashboard.exa.ai/ (optional)
+- **Pinecone**: https://app.pinecone.io/ (optional)
 
 **Note**: Only `OPENAI_API_KEY` is strictly required. The others enable additional features.
 
@@ -164,9 +161,9 @@ Configure environment variables in your Vercel project settings (Settings → En
 ### Changing the AI Model
 
 1. Open `config.ts`
-2. Modify the `MODEL` export (line 4)
-3. Available models depend on your AI SDK provider
-4. Update API keys in `.env.local` if switching providers
+2. Modify the `MODEL` export
+3. Available models depend on your AI SDK provider (OpenAI)
+4. Update API keys in Vercel environment variables if switching providers
 
 ### Adding or Removing Tools
 
@@ -175,7 +172,7 @@ Tools are located in `app/api/chat/tools/`. To add a new tool:
 1. Create a new file in `app/api/chat/tools/`
 2. Import and add it to `app/api/chat/route.ts` in the `tools` object
 3. Add UI display logic in `components/messages/tool-call.tsx`
-4. See `AGENTS.md` for more technical details
+4. Update the tool calling prompt in `prompts.ts` to include instructions for the new tool
 
 ## Architecture Overview
 
@@ -223,23 +220,77 @@ All responses include citations when sources are used.
 - Verify all environment variables are set in Vercel project settings
 - Ensure your Vercel project is connected to the correct Git repository
 
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+ installed
+- A Vercel account (free tier works)
+- An OpenAI API key
+
+### Local Development
+
+1. Clone the repository:
+```bash
+   git clone <your-repo-url>
+   cd MB-AI
+```
+
+2. Install dependencies:
+```bash
+   npm install
+```
+
+3. Create a `.env.local` file based on `env.template`:
+```bash
+   cp env.template .env.local
+```
+
+4. Add your API keys to `.env.local`
+
+5. Run the development server:
+```bash
+   npm run dev
+```
+
+6. Open [http://localhost:3000](http://localhost:3000) in your browser
+
+### Deployment
+
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Add environment variables in Vercel project settings
+4. Deploy!
+
 ## Next Steps
 
 1. **Customize branding**: Update `config.ts` with your name and AI assistant name
 
 2. **Adjust prompts**: Modify `prompts.ts` to match your use case and tone
 
-3. **Set up knowledge base**: Configure Pinecone and upload your documents
+3. **Set up knowledge base**: Configure Pinecone and upload your documents (optional)
 
 4. **Test moderation**: Verify moderation messages match your needs
 
-5. **Deploy**: Build and deploy to your hosting platform (Vercel, AWS, etc.)
+5. **Deploy**: Push to GitHub and deploy via Vercel
+
+## Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **AI SDK**: Vercel AI SDK
+- **AI Model**: OpenAI GPT-4o-mini
+- **Web Search**: Exa API
+- **Vector Database**: Pinecone
+- **Styling**: Tailwind CSS
+- **Deployment**: Vercel
+
+## License
+
+[Add your license here]
 
 ## Support
 
-For technical questions about tool integration, see `AGENTS.md`.
-
-For deployment issues, check the Vercel deployment logs and browser console for error messages.
+For technical questions or issues, please open an issue on GitHub.
 
 ---
 
