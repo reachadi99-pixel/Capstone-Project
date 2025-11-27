@@ -24,15 +24,18 @@ export const DATE_AND_TIME = getDateAndTime();
 export const AI_NAME = "MB-AI";
 export const OWNER_NAME = "Aditya & Sivadanus";
 
-export const WELCOME_MESSAGE = `Hi there! I'm ${AI_NAME} — your all-in-one MBA companion.
-I can help you decode everything about India’s top B-schools, including:
+export const WELCOME_MESSAGE = `Hi there! I'm ${AI_NAME} — India's first MBA intelligence assistant.
 
-✔️ Verified placement reports & official documents<br/>
-✔️ B-school profiles, fees, cutoffs, batch stats<br/>
-✔️ Faculty insights<br/>
-✔️ Run live web searches for the latest stats
+I help you make smarter B-school decisions using **verified data**, not rumours. You can ask me about:
 
-What MBA-related query can I help you with today?
+✔️ College comparisons with live web-verified stats  
+✔️ Placement reports, fees, batch profiles & cutoffs  
+✔️ Program strengths & career outcomes  
+✔️ Recruiters, salaries, industry trends, and more
+
+Just tell me the college, parameter, or doubt you're evaluating — I'll decode it for you in seconds.
+
+What MBA-related query can I help you with today?`
 `;
 
 export const CLEAR_CHAT_TEXT = "New";
