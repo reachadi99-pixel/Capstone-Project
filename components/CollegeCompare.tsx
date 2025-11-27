@@ -36,20 +36,26 @@ type CollegeCompareProps = {
   };
 };
 
-// normalize names based on short forms
+// map common short forms to official dropdown labels
 function normalizeCollege(name: string): string {
   if (!name) return "";
+
   const n = name.toLowerCase().replace(/\./g, "").trim();
+
   if (n.includes("iima") || n.includes("ahmedabad")) return "IIM Ahmedabad";
-  if (n.includes("iimb") || n.includes("bangalore") || n.includes("bengaluru")) return "IIM Bangalore";
+  if (n.includes("iimb") || n.includes("bangalore") || n.includes("bengaluru"))
+    return "IIM Bangalore";
   if (n.includes("iimc") || n.includes("calcutta")) return "IIM Calcutta";
   if (n.includes("iiml") || n.includes("lucknow")) return "IIM Lucknow";
   if (n.includes("iimk") || n.includes("kozhikode")) return "IIM Kozhikode";
   if (n.includes("xlri")) return "XLRI Jamshedpur";
   if (n.includes("spjimr") || n.includes("sp jain")) return "SPJIMR Mumbai";
-  if (n.includes("iim mumbai") || n.includes("nmi ms mumbai")) return "IIM Mumbai";
+  if (n.includes("iim mumbai") || n.includes("nmi ms mumbai"))
+    return "IIM Mumbai";
   if (n.includes("iim udaipur")) return "IIM Udaipur";
   if (n.includes("bitsom") || n.includes("bit som")) return "BITSoM";
+
+  // fallback: return as-is (select will still show the text even if not in list)
   return name;
 }
 
@@ -58,13 +64,20 @@ export function CollegeCompare({ onSend, defaults }: CollegeCompareProps) {
   const [collegeB, setCollegeB] = useState("");
   const [selectedParams, setSelectedParams] = useState<string[]>([]);
 
+  // When defaults change (after "compare X and Y"), prefill
   useEffect(() => {
     if (defaults?.collegeA) setCollegeA(normalizeCollege(defaults.collegeA));
     if (defaults?.collegeB) setCollegeB(normalizeCollege(defaults.collegeB));
 
     if (defaults && selectedParams.length === 0) {
-      setSelectedParams(["QS Ranking", "Median CTC", "Highest CTC", "Average CTC"]);
+      setSelectedParams([
+        "QS Ranking",
+        "Median CTC",
+        "Highest CTC",
+        "Average CTC",
+      ]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaults]);
 
   const toggleParam = (param: string) => {
@@ -78,11 +91,15 @@ export function CollegeCompare({ onSend, defaults }: CollegeCompareProps) {
   const handleCompare = () => {
     if (!collegeA || !collegeB || selectedParams.length === 0) return;
 
-    const message = `Compare ${collegeA} and ${collegeB} on: ${selectedParams.join(", ")}.
+    const message = `Compare ${collegeA} and ${collegeB} on: ${selectedParams.join(
+      ", "
+    )}.
 
-Use the uploaded PDFs first and pick the latest placement data (prefer 2024). If a parameter is missing in the PDFs, fetch it from the web. If neither source has it, write "Not available".
+Start with the uploaded placement reports and PDFs (and any internal knowledge base) for every parameter. Use data for the latest available placement/program batch, and prefer the 2024 graduating batch (or cohorts labelled 2022–24, 2023–25, etc.) wherever available.
 
-Return only a clean markdown table — rows are parameters, columns are colleges. No extra text.`;
+If any requested parameter is missing or unclear for a college after checking the uploaded documents/knowledge base, you must look it up online from reliable, recent sources. Only write "Not available" if neither the PDFs/knowledge base nor a web lookup provide a trustworthy value.
+
+Return only a markdown table: parameters as rows, colleges as columns, with no extra commentary outside the table.`;
 
     onSend(message);
   };
@@ -93,7 +110,8 @@ Return only a clean markdown table — rows are parameters, columns are colleges
 
       {(defaults?.collegeA || defaults?.collegeB) && (
         <div className="text-xs text-gray-500 mb-2">
-          Comparison mode is on. Choose colleges and parameters, then click <b>Compare</b>.
+          I’ve turned on comparison mode. Adjust the colleges/parameters and hit{" "}
+          <b>Compare</b>.
         </div>
       )}
 
@@ -105,7 +123,9 @@ Return only a clean markdown table — rows are parameters, columns are colleges
         >
           <option value="">College 1</option>
           {COLLEGES.map((c) => (
-            <option key={c} value={c}>{c}</option>
+            <option key={c} value={c}>
+              {c}
+            </option>
           ))}
         </select>
 
@@ -116,7 +136,9 @@ Return only a clean markdown table — rows are parameters, columns are colleges
         >
           <option value="">College 2</option>
           {COLLEGES.map((c) => (
-            <option key={c} value={c}>{c}</option>
+            <option key={c} value={c}>
+              {c}
+            </option>
           ))}
         </select>
       </div>
