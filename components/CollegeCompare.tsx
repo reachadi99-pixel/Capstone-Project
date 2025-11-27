@@ -36,26 +36,20 @@ type CollegeCompareProps = {
   };
 };
 
-// map common short forms to official dropdown labels
+// normalize names based on short forms
 function normalizeCollege(name: string): string {
   if (!name) return "";
-
   const n = name.toLowerCase().replace(/\./g, "").trim();
-
   if (n.includes("iima") || n.includes("ahmedabad")) return "IIM Ahmedabad";
-  if (n.includes("iimb") || n.includes("bangalore") || n.includes("bengaluru"))
-    return "IIM Bangalore";
+  if (n.includes("iimb") || n.includes("bangalore") || n.includes("bengaluru")) return "IIM Bangalore";
   if (n.includes("iimc") || n.includes("calcutta")) return "IIM Calcutta";
   if (n.includes("iiml") || n.includes("lucknow")) return "IIM Lucknow";
   if (n.includes("iimk") || n.includes("kozhikode")) return "IIM Kozhikode";
   if (n.includes("xlri")) return "XLRI Jamshedpur";
   if (n.includes("spjimr") || n.includes("sp jain")) return "SPJIMR Mumbai";
-  if (n.includes("iim mumbai") || n.includes("nmi ms mumbai"))
-    return "IIM Mumbai";
+  if (n.includes("iim mumbai") || n.includes("nmi ms mumbai")) return "IIM Mumbai";
   if (n.includes("iim udaipur")) return "IIM Udaipur";
   if (n.includes("bitsom") || n.includes("bit som")) return "BITSoM";
-
-  // fallback: return as-is (select will still show the text even if not in list)
   return name;
 }
 
@@ -64,7 +58,6 @@ export function CollegeCompare({ onSend, defaults }: CollegeCompareProps) {
   const [collegeB, setCollegeB] = useState("");
   const [selectedParams, setSelectedParams] = useState<string[]>([]);
 
-  // When defaults change (after "compare X and Y"), prefill
   useEffect(() => {
     if (defaults?.collegeA) setCollegeA(normalizeCollege(defaults.collegeA));
     if (defaults?.collegeB) setCollegeB(normalizeCollege(defaults.collegeB));
@@ -83,29 +76,16 @@ export function CollegeCompare({ onSend, defaults }: CollegeCompareProps) {
   };
 
   const handleCompare = () => {
-  if (!collegeA || !collegeB || selectedParams.length === 0) return;
+    if (!collegeA || !collegeB || selectedParams.length === 0) return;
 
-  const message = `
-Compare ${collegeA} and ${collegeB} **using only the uploaded placement reports and other uploaded PDFs** (do NOT use web search or any external websites) on these parameters: ${selectedParams.join(
-    ", "
-  )}.
+    const message = `Compare ${collegeA} and ${collegeB} on: ${selectedParams.join(", ")}.
 
-Rules:
-- Use data ONLY for the 2024 graduating batch (or the cohort described as "Class of 2024", "2022–24", "2023–25", etc.).
-- If multiple years are present in the files, ALWAYS choose the 2024 batch data.
-- For CTC values (Median CTC, Average CTC, Highest CTC), always report the numbers for the 2024 batch from the uploaded documents.
-- If the uploaded files do NOT contain a clear value for a parameter for a college for the 2024 batch, write exactly: "Not available in uploaded documents" for that cell.
-- Do NOT guess or use any value from memory or the web. Only use what is in the uploaded files.
+Use the uploaded PDFs first and pick the latest placement data (prefer 2024). If a parameter is missing in the PDFs, fetch it from the web. If neither source has it, write "Not available".
 
-Output:
-- Present the answer as a clean markdown table with:
-  - One column per college.
-  - One row per parameter.
-- Do not include any extra commentary outside the table.
-`;
+Return only a clean markdown table — rows are parameters, columns are colleges. No extra text.`;
 
-  onSend(message);
-};
+    onSend(message);
+  };
 
   return (
     <div className="border rounded-lg p-3 mb-3 text-sm bg-gray-50">
@@ -113,8 +93,7 @@ Output:
 
       {(defaults?.collegeA || defaults?.collegeB) && (
         <div className="text-xs text-gray-500 mb-2">
-          I’ve turned on comparison mode. Adjust the colleges/parameters and hit{" "}
-          <b>Compare</b>.
+          Comparison mode is on. Choose colleges and parameters, then click <b>Compare</b>.
         </div>
       )}
 
@@ -126,9 +105,7 @@ Output:
         >
           <option value="">College 1</option>
           {COLLEGES.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
+            <option key={c} value={c}>{c}</option>
           ))}
         </select>
 
@@ -139,9 +116,7 @@ Output:
         >
           <option value="">College 2</option>
           {COLLEGES.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
+            <option key={c} value={c}>{c}</option>
           ))}
         </select>
       </div>
